@@ -1,0 +1,95 @@
+from functools import reduce
+from re import match
+from collections import Counter
+
+join = lambda string: reduce(lambda c, c_: c + c_, string)
+
+def check_not_even_pal(pali):
+    # pali = "tlkololokot"
+    #         +^+++X+++^+
+    resbuffer1 = [] # right
+    resbuffer2 = [] # middle
+    resbuffer3 = [] # left
+
+    if pali == pali[::-1]: print("YES"); return
+
+    for char_index in range(len(pali) // 2 + 1):
+        char_from_start = pali[char_index]
+        char_from_end   = pali[-(char_index + 1)]
+        if char_index == len(pali) // 2:
+            middle_char = char_from_start # or: char_from_end
+            if pali.count(middle_char) % 2:
+                resbuffer2.append("@")
+            else: resbuffer2.append("X")
+        elif char_from_start == char_from_end:
+            resbuffer1.append("+")
+            resbuffer3.insert(0, "+")
+        else: 
+            resbuffer1.append("^")
+            resbuffer3.insert(0, "^")
+
+    res = join(resbuffer1 + resbuffer2 + resbuffer3)
+    
+    if match(r"\+*\^\^\+*@\+*\^\^\+*", res) or match(r"\+*\^\+*X\+*\^\+*", res) or match(r"\+*\^\+*\^\+*@\+*\^\+*\^\+*", res):
+        print("YES")
+    else:
+        print("NO")
+
+    return res
+
+
+def check_even_pal(pali):
+    # pali = "acrabcarba"
+    #         +^++XX++^+
+    #         0123456789
+    # len = 10
+    # middle = 4, 5
+    resbuffer1 = [] # right
+    resbuffer2 = [] # middle
+    resbuffer3 = [] # left
+
+    if pali == pali[::-1]: print("YES"); return
+
+    for char_index in range(len(pali) // 2):
+        char_from_start = pali[char_index]
+        char_from_end   = pali[-(char_index + 1)]
+
+        if char_index == len(pali) // 2 - 1:
+            middle_char = char_from_start # or: char_from_end
+            if char_from_end == char_from_start:
+                resbuffer2.append("@")
+                resbuffer2.append("@")
+            else: 
+                resbuffer2.append("X")
+                resbuffer2.append("X")
+        elif char_from_start == char_from_end:
+            resbuffer1.append("+")
+            resbuffer3.insert(0, "+")
+        else: 
+            resbuffer1.append("^")
+            resbuffer3.insert(0, "^")
+
+    res = join(resbuffer1 + resbuffer2 + resbuffer3)
+    
+    #   +^+^@^+^+
+    # r"\+*\^\+*\^\+*@\^\+*\^\+*"
+    if match(r"\+*\^\^\+*@@\+*\^\^\+*", res) or match(r"\+*\^\+*XX\+*\^\+*", res) or match(r"\+*\^\+*\^\+*@@\+*\^\+*\^\+*", res):
+        print("YES")
+    else:
+        print("NO")
+
+    # return res
+
+
+def check_pal(inp):
+    
+    if sum(1 for x in Counter(inp).values() if x % 2 == 1) > 1:
+        print("NO")
+        return
+
+    if len(inp) % 2 == 0: 
+        check_even_pal(inp)
+    else: 
+        check_not_even_pal(inp)
+
+if __name__ == "__main__": check_pal(input())
